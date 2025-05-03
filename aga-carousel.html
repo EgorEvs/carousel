@@ -8,7 +8,7 @@
   <style>
     body { margin:0; padding:0; background:transparent; font-family:Arial,sans-serif; }
     .swiper-container { position:relative; padding:0 10px; box-sizing:border-box; }
-    .swiper-wrapper { padding-bottom:0!important; }
+    .swiper-wrapper { padding-bottom:0 !important; }
     .swiper-button-prev, .swiper-button-next {
       position:absolute; top:50%; transform:translateY(-50%);
       z-index:10; width:24px; height:24px; color:#777;
@@ -33,63 +33,114 @@
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <script>
   (function(){
-    // ВСТАВЬТЕ СЮДА ВАШ /exec URL
-    const JSON_URL = 'https://script.google.com/macros/s/AKfycbz3AODeq1PjTU5iPCIDatwzCJA.../exec?json';
+    // 👉 ПОДСТАВЬТЕ СЮДА ВАШ РЕАЛЬНЫЙ /exec URL
+    const JSON_URL = 'https://script.google.com/macros/s/AKfycbzHNP4dEeqdBSgyX0RWGRJdVtocmqj1jFoGk42wAPyJaqK-WLOwnBeOe5V0N5UfhPNu/exec?json';
 
-    // Инициализация карусели
+    console.log('Fetching JSON from', JSON_URL);
+
+    // Инициализируем Swiper
     const swiper = new Swiper('.swiper-container', {
-      slidesPerView:'auto', spaceBetween:10, loop:true,
-      autoplay:{delay:3000,disableOnInteraction:false},
-      navigation:{ nextEl:'.swiper-button-next', prevEl:'.swiper-button-prev' }
+      slidesPerView: 'auto',
+      spaceBetween: 10,
+      loop: true,
+      autoplay: { delay: 3000, disableOnInteraction: false },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev'
+      }
     });
 
-    // Подгружаем данные
+    // Делаем запрос
     fetch(JSON_URL)
-      .then(r => r.json())
+      .then(r => {
+        console.log('Fetch response status:', r.status);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
       .then(data => {
-        console.log('Loaded offers:', data.length);
+        console.log('Loaded offers:', data.length, data);
         data.forEach(o => {
           const slide = document.createElement('div');
           slide.className = 'swiper-slide';
           slide.style.cssText = `
-            background:#fff; border:1px solid #e0e0e0; border-radius:8px;
-            box-shadow:0 2px 6px rgba(0,0,0,0.05); overflow:hidden;
-            display:flex; flex-direction:column; width:160px;
+            background:#fff;
+            border:1px solid #e0e0e0;
+            border-radius:8px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.05);
+            overflow:hidden;
+            display:flex;
+            flex-direction:column;
+            width:160px;
           `;
           slide.innerHTML = `
-            <a href="${o.url}" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;flex:1;">
+            <a href="${o.url}" style="flex:1;display:flex;flex-direction:column;text-decoration:none;color:inherit;">
               <div style="position:relative;width:100%;padding-top:60%;background:#f9f9f9;">
                 <img src="${o.pictures[0]}" alt="${o.name}" style="
-                  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-                  max-width:100%;max-height:100%;object-fit:contain;
+                  position:absolute;top:50%;left:50%;
+                  transform:translate(-50%,-50%);
+                  max-width:100%;max-height:100%;
+                  object-fit:contain;
                 "/>
               </div>
               <div style="padding:10px;flex:1;display:flex;flex-direction:column;">
-                <p style="font-size:14px;font-weight:500;color:#333;margin:0 0 6px;line-height:1.2;
-                          display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">
-                  ${o.name}
-                </p>
-                <div style="font-size:12px;color:#777;display:grid;
-                            grid-template-columns:auto 1fr;row-gap:3px;column-gap:6px;margin-top:auto;">
+                <p style="
+                  font-size:14px;
+                  font-weight:500;
+                  color:#333;
+                  margin:0 0 6px;
+                  line-height:1.2;
+                  display:-webkit-box;
+                  -webkit-box-orient:vertical;
+                  -webkit-line-clamp:2;
+                  overflow:hidden;
+                ">${o.name}</p>
+                <div style="
+                  font-size:12px;
+                  color:#777;
+                  display:grid;
+                  grid-template-columns:auto 1fr;
+                  row-gap:3px;
+                  column-gap:6px;
+                  margin-top:auto;
+                ">
                   <span style="font-weight:600;">Артикул</span><span>${o.params['Артикул']||o.id}</span>
                   <span style="font-weight:600;">Примен.</span><span>${o.params['Применяемость']||''}</span>
                   <span style="font-weight:600;">Произв.</span><span>${o.params['Производитель']||''}</span>
                 </div>
               </div>
             </a>
-            <div style="padding:0 10px 10px;display:flex;justify-content:space-between;align-items:center;">
-              <span style="color:#e74c3c;font-size:18px;font-weight:700;">${o.price} р.</span>
+            <div style="
+              padding:0 10px 10px;
+              display:flex;justify-content:space-between;align-items:center;
+            ">
+              <span style="
+                color:#e74c3c;
+                font-size:18px;
+                font-weight:700;
+              ">${o.price} р.</span>
               <a href="${o.url}" style="
-                background:#c0392b;color:#fff;padding:6px 12px;border-radius:4px;
-                font-size:12px;text-decoration:none;transition:background .3s;"
-                onmouseover="this.style.background='#a93226'"
-                onmouseout="this.style.background='#c0392b'">Предложения</a>
+                background:#c0392b;
+                color:#fff;
+                padding:6px 12px;
+                border-radius:4px;
+                font-size:12px;
+                text-decoration:none;
+                transition:background .3s;
+              " onmouseover="this.style.background='#a93226'"
+                onmouseout="this.style.background='#c0392b'">
+                Предложения
+              </a>
             </div>
           `;
           swiper.appendSlide(slide);
         });
       })
-      .catch(err => console.error('Fetch error:', err));
+      .catch(err => {
+        console.error('Fetch error:', err);
+        const errEl = document.createElement('pre');
+        errEl.textContent = 'Ошибка загрузки данных: ' + err;
+        document.body.appendChild(errEl);
+      });
   })();
   </script>
 </body>
