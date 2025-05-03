@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test AGA JSON</title>
+</head>
+<body>
+  <h1>Тест подгрузки JSON</h1>
+  <pre id="out">Loading…</pre>
+  <script>
+    // Вставьте сюда точно ваш exec-URL
+    const JSON_URL = 'https://script.google.com/macros/s/AKfycbz3AODeq1PjTU5iPCIDatwzCJA__/exec?json';
+
+    fetch(JSON_URL)
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(data => {
+        document.getElementById('out').textContent = 
+          'Loaded ' + data.length + ' offers:\n' + JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('out').textContent = 'Error: ' + err;
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
