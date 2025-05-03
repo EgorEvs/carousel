@@ -6,128 +6,82 @@
   <!-- Swiper CSS -->
   <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
   <style>
-    body { margin:0; padding:0; background:transparent; font-family:Arial,sans-serif; }
-    .swiper-container { position:relative; padding:0 10px; box-sizing:border-box; }
-    .swiper-wrapper { padding-bottom:0 !important; }
-    .swiper-button-prev, .swiper-button-next {
+    body { margin:0; padding:0; font-family:Arial,sans-serif; background:transparent }
+    .swiper-container { padding:0 10px; box-sizing:border-box }
+    .swiper-button-prev,
+    .swiper-button-next {
       position:absolute; top:50%; transform:translateY(-50%);
-      z-index:10; width:24px; height:24px; color:#777;
+      width:24px; height:24px; color:#777; z-index:10;
     }
-    .swiper-button-prev { left:2px; }
-    .swiper-button-next { right:2px; }
+    .swiper-button-prev { left:2px }
+    .swiper-button-next { right:2px }
   </style>
 </head>
 <body>
-
-  <h2 style="text-align:center;font-size:24px;margin:16px 0;color:#333;">
-    Спецжидкости AGA
-  </h2>
-
+  <h2 style="text-align:center; margin:16px 0; color:#333;">Спецжидкости AGA</h2>
   <div class="swiper-container">
-    <div class="swiper-wrapper" id="aga-swiper-wrapper"></div>
+    <div class="swiper-wrapper"></div>
     <div class="swiper-button-prev"></div>
     <div class="swiper-button-next"></div>
   </div>
 
-  <!-- Swiper JS -->
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <script>
-  (function(){
-    // 👉 ПОДСТАВЬТЕ СЮДА ВАШ РЕАЛЬНЫЙ /exec URL
-    const JSON_URL = 'https://script.google.com/macros/s/AKfycbzHNP4dEeqdBSgyX0RWGRJdVtocmqj1jFoGk42wAPyJaqK-WLOwnBeOe5V0N5UfhPNu/exec?json';
+    const JSON_URL = 'YOUR_EXEC_URL?json';
+    console.log('Fetch JSON from', JSON_URL);
 
-    console.log('Fetching JSON from', JSON_URL);
-
-    // Инициализируем Swiper
     const swiper = new Swiper('.swiper-container', {
-      slidesPerView: 'auto',
-      spaceBetween: 10,
-      loop: true,
-      autoplay: { delay: 3000, disableOnInteraction: false },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev'
-      }
+      slidesPerView:'auto', spaceBetween:10, loop:true,
+      autoplay:{delay:3000,disableOnInteraction:false},
+      navigation:{ nextEl:'.swiper-button-next', prevEl:'.swiper-button-prev' }
     });
 
-    // Делаем запрос
     fetch(JSON_URL)
-      .then(r => {
-        console.log('Fetch response status:', r.status);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
+      .then(r => { console.log('Response:', r.status); return r.json(); })
       .then(data => {
         console.log('Loaded offers:', data.length, data);
         data.forEach(o => {
           const slide = document.createElement('div');
           slide.className = 'swiper-slide';
-          slide.style.cssText = `
-            background:#fff;
-            border:1px solid #e0e0e0;
-            border-radius:8px;
-            box-shadow:0 2px 6px rgba(0,0,0,0.05);
-            overflow:hidden;
-            display:flex;
-            flex-direction:column;
-            width:160px;
+          slide.style = `
+            background:#fff;border:1px solid #e0e0e0;border-radius:8px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.05);overflow:hidden;
+            display:flex;flex-direction:column;width:160px;
           `;
           slide.innerHTML = `
-            <a href="${o.url}" style="flex:1;display:flex;flex-direction:column;text-decoration:none;color:inherit;">
-              <div style="position:relative;width:100%;padding-top:60%;background:#f9f9f9;">
-                <img src="${o.pictures[0]}" alt="${o.name}" style="
-                  position:absolute;top:50%;left:50%;
-                  transform:translate(-50%,-50%);
-                  max-width:100%;max-height:100%;
-                  object-fit:contain;
-                "/>
-              </div>
-              <div style="padding:10px;flex:1;display:flex;flex-direction:column;">
-                <p style="
-                  font-size:14px;
-                  font-weight:500;
-                  color:#333;
-                  margin:0 0 6px;
-                  line-height:1.2;
-                  display:-webkit-box;
-                  -webkit-box-orient:vertical;
-                  -webkit-line-clamp:2;
-                  overflow:hidden;
-                ">${o.name}</p>
-                <div style="
-                  font-size:12px;
-                  color:#777;
-                  display:grid;
-                  grid-template-columns:auto 1fr;
-                  row-gap:3px;
-                  column-gap:6px;
-                  margin-top:auto;
+            <a href="${o.url}" style="flex:1;display:flex;flex-direction:column;
+                                     text-decoration:none;color:inherit;">
+              <div style="position:relative;width:100%;padding-top:60%;background:#f9f9f9">
+                <img src="${o.pictures[0]}" alt="" style="
+                  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+                  max-width:100%;max-height:100%;object-fit:contain
                 ">
-                  <span style="font-weight:600;">Артикул</span><span>${o.params['Артикул']||o.id}</span>
-                  <span style="font-weight:600;">Примен.</span><span>${o.params['Применяемость']||''}</span>
-                  <span style="font-weight:600;">Произв.</span><span>${o.params['Производитель']||''}</span>
+              </div>
+              <div style="padding:10px;display:flex;flex-direction:column;flex:1">
+                <p style="margin:0 0 6px;font-size:14px;font-weight:500;color:#333;
+                          display:-webkit-box;-webkit-box-orient:vertical;
+                          -webkit-line-clamp:2;overflow:hidden;">
+                  ${o.name}
+                </p>
+                <div style="font-size:12px;color:#777;
+                            display:grid;grid-template-columns:auto 1fr;
+                            row-gap:3px;column-gap:6px;margin-top:auto">
+                  <span style="font-weight:600">Артикул</span><span>${o.params['Артикул']||o.id}</span>
+                  <span style="font-weight:600">Примен.</span><span>${o.params['Применяемость']||''}</span>
+                  <span style="font-weight:600">Произв.</span><span>${o.params['Производитель']||''}</span>
                 </div>
               </div>
             </a>
-            <div style="
-              padding:0 10px 10px;
-              display:flex;justify-content:space-between;align-items:center;
-            ">
-              <span style="
-                color:#e74c3c;
-                font-size:18px;
-                font-weight:700;
-              ">${o.price} р.</span>
+            <div style="padding:0 10px 10px;display:flex;justify-content:space-between;">
+              <span style="color:#e74c3c;font-size:18px;font-weight:700;">
+                ${o.price} р.
+              </span>
               <a href="${o.url}" style="
-                background:#c0392b;
-                color:#fff;
-                padding:6px 12px;
-                border-radius:4px;
-                font-size:12px;
-                text-decoration:none;
-                transition:background .3s;
-              " onmouseover="this.style.background='#a93226'"
-                onmouseout="this.style.background='#c0392b'">
+                background:#c0392b;color:#fff;padding:6px 12px;border-radius:4px;
+                font-size:12px;text-decoration:none;transition:background .3s
+              "
+                 onmouseover="this.style.background='#a93226'"
+                 onmouseout ="this.style.background='#c0392b'">
                 Предложения
               </a>
             </div>
@@ -137,11 +91,9 @@
       })
       .catch(err => {
         console.error('Fetch error:', err);
-        const errEl = document.createElement('pre');
-        errEl.textContent = 'Ошибка загрузки данных: ' + err;
-        document.body.appendChild(errEl);
+        document.body.insertAdjacentHTML('beforeend',
+          `<p style="color:red;text-align:center;">Ошибка загрузки данных:<br>${err}</p>`);
       });
-  })();
   </script>
 </body>
 </html>
